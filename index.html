@@ -2,42 +2,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CropGuard IoT</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CropGuard IoT Dashboard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f1f8f1;
-            text-align: center;
-            margin: 0;
-            padding: 30px;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        h1 {
-            color: #1b5e20;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f8f1;
+    color: #263528;
+}
 
-        .container {
-            background: white;
-            padding: 25px;
-            margin: 20px auto;
-            max-width: 600px;
-            border-radius: 12px;
-        }
-    </style>
+header {
+    background: #1b5e20;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header p {
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    margin-bottom: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #00000012;
+}
+
+.card h2 {
+    color: #1b5e20;
+    margin-top: 0;
+}
+
+.status {
+    color: #d97706;
+    font-weight: bold;
+}
+
+button {
+    background: #1b5e20;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #667;
+}
+</style>
 </head>
 
 <body>
 
-    <h1>CropGuard IoT</h1>
+<header>
+    <h1>🌱 CropGuard IoT</h1>
     <p>Smart Crop Protection and Animal Intrusion Alert System</p>
+</header>
 
-    <div class="container">
+<div class="container">
+
+    <div class="card">
         <h2>Welcome, Farmer!</h2>
-        <p>Your smart crop protection system will be managed here.</p>
+        <p>Monitor and manage your smart crop protection system.</p>
     </div>
+
+    <div class="card">
+        <h2>1. System Control</h2>
+        <p>Protection System Status:
+            <span class="status">Not Connected</span>
+        </p>
+        <button disabled>Turn ON</button>
+        <button disabled>Turn OFF</button>
+        <p>Remote control will be available after connecting the device.</p>
+    </div>
+
+    <div class="card">
+        <h2>2. Location & Distance</h2>
+        <p>Prototype Location: Not Updated</p>
+        <p>Farmer's Location: Not Available</p>
+        <p>Distance: Not Available</p>
+        <button disabled>Update Prototype Location</button>
+        <p>Location services will be connected in a later step.</p>
+    </div>
+
+    <div class="card">
+        <h2>3. Captured Images</h2>
+        <p>No images received yet.</p>
+        <p>Images captured by ESP32-CAM will appear here.</p>
+    </div>
+
+</div>
+
+<footer>
+    CropGuard IoT | Smart Agriculture Project
+</footer>
 
 </body>
 </html>
