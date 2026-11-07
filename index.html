@@ -133,78 +133,97 @@ footer {
 <footer>
     CropGuard IoT | Smart Agriculture Project
 </footer>
-    <script>
-const SUPABASE_URL = "https://rchgoakaisdhndoumdoo.supabase.co";
-const SUPABASE_KEY = "sb_publishable_njHcJLuu6v8L1rTqCIWivw_ydU9Y_Li";
+    
+<script>
+(() => {
 
-const sbClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-        async function loadStatus() {
-    const status = document.getElementById("systemStatus");
+    const SUPABASE_URL = "https://rchgoakaisdhndoumdoo.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_njHcJLuu6v8L1rTqCIWivw_ydU9Y_Li";
 
-    const { data, error } = await sbClient
-    .from("Device_status")
-        .select("is_enabled")
-        .eq("id", 1)
-        .maybeSingle();
-
-    if (error) {
-        status.textContent = "Connection Error";
-        return;
-    }
-
-    status.textContent = data?.is_enabled ? "ON" : "OFF";
-}
-
-loadStatus();
-setInterval(loadStatus, 5000);
-        
-        async function controlSystem(enabled) {
-    const password = document.getElementById("controlPassword").value;
-    const message = document.getElementById("controlMessage");
-
-    if (!password) {
-        message.textContent = "Please enter the group password.";
-        return;
-    }
-
-    message.textContent = "Sending command...";
-
-   const { data, error } = await sbClient.functions.invoke(
-        "cropguard-control",
-        {
-            body: {
-                password: password,
-                enabled: enabled
-            }
-        }
+    const sbClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
-    if (error) {
-        message.textContent = "Error: " + error.message;
-        return;
+    async function loadStatus() {
+        const status = document.getElementById("systemStatus");
+
+        try {
+            const { data, error } = await sbClient
+                .from("Device_status")
+                .select("is_enabled")
+                .eq("id", 1)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            status.textContent = data?.is_enabled ? "ON" : "OFF";
+
+        } catch (error) {
+            console.error("Status loading error:", error);
+            status.textContent = "Connection Error";
+        }
     }
 
-    if (data && data.success) {
-        document.getElementById("systemStatus").textContent =
-            data.is_enabled ? "ON" : "OFF";
+    async function controlSystem(enabled) {
+        const password =
+            document.getElementById("controlPassword").value;
 
-        message.textContent = "System updated successfully.";
-    } else {
-        message.textContent = data?.error || "Command failed.";
+        const message =
+            document.getElementById("controlMessage");
+
+        if (!password) {
+            message.textContent =
+                "Please enter the group control password.";
+            return;
+        }
+
+        message.textContent = "Sending command...";
+
+        try {
+            const { data, error } =
+                await sbClient.functions.invoke(
+                    "cropguard-control",
+                    {
+                        body: {
+                            password: password,
+                            enabled: enabled
+                        }
+                    }
+                );
+
+            if (error) throw error;
+
+            if (data && data.success) {
+                document.getElementById("systemStatus").textContent =
+                    data.is_enabled ? "ON" : "OFF";
+
+                message.textContent =
+                    "System updated successfully.";
+            } else {
+                message.textContent =
+                    data?.error || "Command failed.";
+            }
+
+        } catch (error) {
+            console.error("Control error:", error);
+            message.textContent = "Error: " + error.message;
+        }
     }
-}
 
-document.getElementById("onButton").addEventListener("click", () => {
-    controlSystem(true);
-});
+    document.getElementById("onButton").addEventListener(
+        "click", () => controlSystem(true)
+    );
 
-document.getElementById("offButton").addEventListener("click", () => {
-    controlSystem(false);
-});
+    document.getElementById("offButton").addEventListener(
+        "click", () => controlSystem(false)
+    );
+
+    loadStatus();
+    setInterval(loadStatus, 5000);
+
+})();
 </script>
-
-</body>
+    </body>
 </html>
+
