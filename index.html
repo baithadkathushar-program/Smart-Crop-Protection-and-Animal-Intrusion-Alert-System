@@ -137,15 +137,15 @@ footer {
 const SUPABASE_URL = "https://rchgoakaisdhndoumdoo.supabase.co";
 const SUPABASE_KEY = "sb_publishable_njHcJLuu6v8L1rTqCIWivw_ydU9Y_Li";
 
-const supabase = window.supabase.createClient(
+const sbClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
         async function loadStatus() {
     const status = document.getElementById("systemStatus");
 
-    const { data, error } = await supabase
-        .from("Device_status")
+    const { data, error } = await sbClient
+    .from("Device_status")
         .select("is_enabled")
         .eq("id", 1)
         .maybeSingle();
@@ -172,7 +172,7 @@ setInterval(loadStatus, 5000);
 
     message.textContent = "Sending command...";
 
-    const { data, error } = await supabase.functions.invoke(
+   const { data, error } = await sbClient.functions.invoke(
         "cropguard-control",
         {
             body: {
