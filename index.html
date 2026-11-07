@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CropGuard IoT Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 * {
@@ -95,14 +96,22 @@ footer {
     </div>
 
     <div class="card">
-        <h2>1. System Control</h2>
-        <p>Protection System Status:
-            <span class="status">Not Connected</span>
-        </p>
-        <button disabled>Turn ON</button>
-        <button disabled>Turn OFF</button>
-        <p>Remote control will be available after connecting the device.</p>
-    </div>
+    <h2>1. System Control</h2>
+
+    <p>Protection System Status:
+        <span class="status" id="systemStatus">Checking...</span>
+    </p>
+
+    <input type="password" id="controlPassword"
+           placeholder="Enter group control password">
+
+    <br>
+
+    <button id="onButton">Turn ON</button>
+    <button id="offButton">Turn OFF</button>
+
+    <p id="controlMessage"></p>
+</div>
 
     <div class="card">
         <h2>2. Location & Distance</h2>
@@ -124,6 +133,58 @@ footer {
 <footer>
     CropGuard IoT | Smart Agriculture Project
 </footer>
+    <script>
+const SUPABASE_URL = "https://rchgoakaisdhndoumdoo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_njHcJLuu6v8L1rTqCIWivw_ydU9Y_Li";
+
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+        async function controlSystem(enabled) {
+    const password = document.getElementById("controlPassword").value;
+    const message = document.getElementById("controlMessage");
+
+    if (!password) {
+        message.textContent = "Please enter the group password.";
+        return;
+    }
+
+    message.textContent = "Sending command...";
+
+    const { data, error } = await supabase.functions.invoke(
+        "cropguard-control",
+        {
+            body: {
+                password: password,
+                enabled: enabled
+            }
+        }
+    );
+
+    if (error) {
+        message.textContent = "Error: " + error.message;
+        return;
+    }
+
+    if (data && data.success) {
+        document.getElementById("systemStatus").textContent =
+            data.is_enabled ? "ON" : "OFF";
+
+        message.textContent = "System updated successfully.";
+    } else {
+        message.textContent = data?.error || "Command failed.";
+    }
+}
+
+document.getElementById("onButton").addEventListener("click", () => {
+    controlSystem(true);
+});
+
+document.getElementById("offButton").addEventListener("click", () => {
+    controlSystem(false);
+});
+</script>
 
 </body>
 </html>
