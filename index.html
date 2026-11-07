@@ -141,6 +141,26 @@ const supabase = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
+        async function loadStatus() {
+    const status = document.getElementById("systemStatus");
+
+    const { data, error } = await supabase
+        .from("Device_status")
+        .select("is_enabled")
+        .eq("id", 1)
+        .maybeSingle();
+
+    if (error) {
+        status.textContent = "Connection Error";
+        return;
+    }
+
+    status.textContent = data?.is_enabled ? "ON" : "OFF";
+}
+
+loadStatus();
+setInterval(loadStatus, 5000);
+        
         async function controlSystem(enabled) {
     const password = document.getElementById("controlPassword").value;
     const message = document.getElementById("controlMessage");
