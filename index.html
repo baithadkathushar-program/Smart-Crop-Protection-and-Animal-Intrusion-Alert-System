@@ -262,6 +262,18 @@ footer {
                 "width:100%;max-width:400px;border-radius:10px;margin:10px;";
 
             gallery.appendChild(img);
+            const time = document.createElement("p");
+
+time.textContent = "Uploaded: " +
+    new Date(file.created_at).toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+
+time.style.cssText =
+    "font-size:14px;color:#667;margin:0 10px 20px;";
+
+gallery.appendChild(time);
         }
 
     } catch (error) {
