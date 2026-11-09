@@ -216,6 +216,7 @@ footer {
 
     loadStatus();
     setInterval(loadStatus, 5000);
+    let lastImageSignature = "";
     async function loadImages() {
     const gallery = document.getElementById("imageGallery");
 
@@ -241,6 +242,15 @@ footer {
             gallery.innerHTML = "<p>No captured images yet.</p>";
             return;
         }
+        const imageSignature = images
+    .map(file => file.name + file.created_at)
+    .join("|");
+
+if (imageSignature === lastImageSignature) {
+    return;
+}
+
+lastImageSignature = imageSignature;
 
         gallery.innerHTML = "";
 
