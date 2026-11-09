@@ -118,11 +118,9 @@ footer {
     <div class="card">
         <h2>2. Captured Images</h2>
 
-<img
-    src="https://rchgoakaisdhndoumdoo.supabase.co/storage/v1/object/sign/Cropguard-images/images.jpg?token=eyJraWQiOiI1Y2NkMmQ5MS03MzRiLTQzN2MtOGE5OC1lNzFmOTlhODlmYzYiLCJhbGciOiJFUzI1NiJ9.eyJ1cmwiOiJDcm9wZ3VhcmQtaW1hZ2VzL2ltYWdlcy5qcGciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzk0MDcxNTg5LCJleHAiOjE3OTQ2NzYzODl9.q4OlXloDGdcaRMApz58ZM-yghfXzO_w3j6TLB0_z0dYTzvEMurvJR2KBi5Kt-2JVf--7ezBMz4MCJvUI6ouuPg"
-    alt="Captured animal image"
-    style="width: 100%; max-width: 400px; border-radius: 10px;"
->
+<div id="imageGallery">
+    <p>Loading captured images...</p>
+</div>
     </div>
 
 </div>
@@ -218,6 +216,62 @@ footer {
 
     loadStatus();
     setInterval(loadStatus, 5000);
+    async function loadImages() {
+    const gallery = document.getElementById("imageGallery");
+
+    try {
+        const { data, error } = await sbClient
+            .storage
+            .from("Cropguard-images")
+            .list("", {
+                limit: 50,
+                sortBy: {
+                    column: "created_at",
+                    order: "desc"
+                }
+            });
+
+        if (error) throw error;
+
+        const images = data.filter(file =>
+            /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+        );
+
+        if (images.length === 0) {
+            gallery.innerHTML = "<p>No captured images yet.</p>";
+            return;
+        }
+
+        gallery.innerHTML = "";
+
+        for (const file of images) {
+            const { data: signedData, error: urlError } =
+                await sbClient.storage
+                    .from("Cropguard-images")
+                    .createSignedUrl(file.name, 3600);
+
+            if (urlError) {
+                console.error(urlError);
+                continue;
+            }
+
+            const img = document.createElement("img");
+            img.src = signedData.signedUrl;
+            img.alt = "Captured animal image";
+            img.style.cssText =
+                "width:100%;max-width:400px;border-radius:10px;margin:10px;";
+
+            gallery.appendChild(img);
+        }
+
+    } catch (error) {
+        console.error("Image loading error:", error);
+        gallery.innerHTML = "<p>Unable to load images.</p>";
+    }
+}
+
+loadImages();
+setInterval(loadImages, 30000);
 
 })();
 </script>
